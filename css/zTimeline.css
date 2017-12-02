@@ -1,0 +1,5 @@
+svg.z-timeline rect.band {
+  fill: transparent;
+  stroke: black;
+  stroke-width: 1;
+}
