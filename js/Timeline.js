@@ -18,6 +18,7 @@ class Timeline {
 
 
   /**
+   * @public
    * @static
    * @returns {Timeline}
    */
@@ -29,6 +30,7 @@ class Timeline {
 
   /**
    * Set data.
+   * @public
    * @param {Object} data
    * @returns {Timeline}
    */
@@ -41,6 +43,7 @@ class Timeline {
 
   /**
    * Render timeline.
+   * @public
    * @param {SVGElement} container
    * @returns {Timeline}
    */
@@ -50,14 +53,21 @@ class Timeline {
 
     this._backbone = this._container
       .append('rect')
-      .attr('class', 'backbone');
+      .attr('class', 'backbone')
+      .style('fill', 'steelblue');
 
-    this._events = this._container
+    this._eventsContainers = this._container
       .selectAll('.event')
       .data(this._data.events)
       .enter()
-      .append('circle')
+      .append('g')
       .attr('class', 'event');
+
+    this._events = this._data.events.map(function(d, i) {
+      return Event.getInstance(this)
+        .setData(d)
+        .renderTo(this._eventsContainers.nodes()[i])
+    }.bind(this))
 
     return this;
   }
@@ -65,16 +75,19 @@ class Timeline {
 
   /**
    * Update timeline.
+   * @public
    * @returns {Timeline}
    */
   update() {
 
+    this._events.forEach(event => event.update());
     return this;
   }
 
 
   /**
    * Resize timeline.
+   * @public
    * @returns {Timeline}
    */
   resize() {
@@ -83,16 +96,13 @@ class Timeline {
       .attr('width', function(d) {
         return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
       }.bind(this))
-      .attr('height', this.getHeight() - 36)
+      .attr('height', this.getHeight() - 38)
       .attr('x', function(d) {
         return this._xScale(this.getMinDate(d));
       }.bind(this))
-      .attr('y', 18);
+      .attr('y', 19);
 
-    this._events
-      .attr('r', 10)
-      .attr('cx', d => this._xScale(new Date(d.date)))
-      .attr('cy', this.getHeight() / 2);
+    this._events.forEach(event => event.resize());
 
     return this;
   }
@@ -100,6 +110,7 @@ class Timeline {
 
   /**
    * Get timeline's container height.
+   * @public
    * @returns {Number}
    */
   getHeight() {
@@ -110,6 +121,7 @@ class Timeline {
 
   /**
    * Get interval min date.
+   * @public
    * @returns {Date}
    */
   getMaxDate(d) {
@@ -120,6 +132,7 @@ class Timeline {
 
   /**
    * Get interval max date.
+   * @public
    * @returns {Date}
    */
   getMinDate(d) {

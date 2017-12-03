@@ -30,6 +30,7 @@ class ZTimeline {
 
 
   /**
+   * @public
    * @static
    * @returns {ZTimeline}
    */
@@ -47,6 +48,7 @@ class ZTimeline {
 
   /**
    * Set data.
+   * @public
    * @param {Object[]} data
    * @returns {ZTimeline}
    */
@@ -58,6 +60,7 @@ class ZTimeline {
 
 
   /**
+   * Render chart.
    * @public
    * @param {HTMLElement} container
    * @returns {ZTimeline}
@@ -106,8 +109,9 @@ class ZTimeline {
 
 
   /**
-   * Update chart
-   * @returns ZTimeline
+   * Update chart.
+   * @public
+   * @returns {ZTimeline}
    */
   update() {
 
@@ -127,7 +131,8 @@ class ZTimeline {
 
   /**
    * Resize chart.
-   * @returns ZTimeline
+   * @public
+   * @returns {ZTimeline}
    */
   resize() {
 
@@ -154,6 +159,7 @@ class ZTimeline {
 
   /**
    * Get X axis domain.
+   * @public
    * @returns {Date[]}
    */
   getXDomain() {
@@ -170,6 +176,7 @@ class ZTimeline {
 
   /**
    * Get Y axis domain.
+   * @public
    * @returns {String[]}
    */
   getYDomain() {
@@ -180,6 +187,7 @@ class ZTimeline {
 
   /**
    * Get chart outer width.
+   * @public
    * @returns {Number}
    */
   getOuterWidth() {
@@ -193,6 +201,7 @@ class ZTimeline {
 
   /**
    * Get chart inner width.
+   * @public
    * @returns {Number}
    */
   getInnerWidth() {
@@ -203,6 +212,7 @@ class ZTimeline {
 
   /**
    * Get chart outer height.
+   * @public
    * @returns {Number}
    */
   getOuterHeight() {
@@ -213,6 +223,7 @@ class ZTimeline {
 
   /**
    * Get chart inner height.
+   * @public
    * @returns {Number}
    */
   getInnerHeight() {
