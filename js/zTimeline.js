@@ -46,12 +46,12 @@ class ZTimeline {
   /**
    * Set data.
    * @public
-   * @param {Object[]} data
+   * @param {Object} data
    * @returns {ZTimeline}
    */
-  setData(data) {
+  setData(config) {
 
-    this._data = data;
+    this._config = config;
     return this;
   }
 
@@ -66,7 +66,15 @@ class ZTimeline {
 
     this._container = d3.select(container);
 
-    this._svg = this._container
+    this._div = this._container
+      .append('div')
+      .attr('class', 'z-timeline');
+
+    this._title = this._div
+      .append('div')
+      .attr('class', this._config.title ? 'title' : null);
+
+    this._svg = this._div
       .append('svg')
       .attr('class', 'z-timeline');
 
@@ -84,7 +92,7 @@ class ZTimeline {
 
     this._bands = this._bandsContainer
       .selectAll('g.band')
-      .data(this._data)
+      .data(this._config.data)
       .enter()
       .append('g')
       .attr('class', 'band')
@@ -92,7 +100,7 @@ class ZTimeline {
         return 'translate(' + [0, i * this._bandHeight] + ')'
       }.bind(this));
 
-    this._timelines = this._data.map(function(d, i) {
+    this._timelines = this._config.data.map(function(d, i) {
       return Timeline.getInstance(this)
         .setData(d)
         .renderTo(this._bands.nodes()[i]);
@@ -112,6 +120,8 @@ class ZTimeline {
     this._xScale
       .rangeRound([0, this.getInnerWidth()])
       .domain(this.getXDomain());
+
+    this._title.text(this._config.title)
 
     this._timelines.forEach(timeline => timeline.update())
 
@@ -150,7 +160,7 @@ class ZTimeline {
    */
   getXDomain() {
 
-    const dateSet = this._data.reduce(function(result, eventSet, index) {
+    const dateSet = this._config.data.reduce(function(result, eventSet, index) {
       return result.concat(eventSet.interval)
     }, []).map(function(d) {
       return new Date(d);
@@ -203,6 +213,6 @@ class ZTimeline {
    */
   getInnerHeight() {
 
-    return this._bandHeight * this._data.length;
+    return this._bandHeight * this._config.data.length;
   }
 }

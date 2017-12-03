@@ -87,7 +87,6 @@ class Timeline {
 
     this._title
       .style('fill', '#404040')
-      .style('font-family', 'sans-serif')
       .text(this._data.name);
 
     this._events.forEach(event => event.update());
