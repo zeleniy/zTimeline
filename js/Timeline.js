@@ -51,6 +51,11 @@ class Timeline {
 
     this._container = d3.select(container);
 
+    this._title = this._container
+      .append('text')
+      .attr('class', 'title')
+      .attr('dy', '-0.7em');
+
     this._backbone = this._container
       .append('rect')
       .attr('class', 'backbone')
@@ -80,7 +85,13 @@ class Timeline {
    */
   update() {
 
+    this._title
+      .style('fill', '#404040')
+      .style('font-family', 'sans-serif')
+      .text(this._data.name);
+
     this._events.forEach(event => event.update());
+
     return this;
   }
 
@@ -101,6 +112,9 @@ class Timeline {
         return this._xScale(this.getMinDate(d));
       }.bind(this))
       .attr('y', 19);
+
+    this._title
+      .attr('y', this.getHeight() / 2)
 
     this._events.forEach(event => event.resize());
 

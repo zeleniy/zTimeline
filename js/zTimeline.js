@@ -18,14 +18,11 @@ class ZTimeline {
       top: 10,
       right: 10,
       bottom: 0,
-      left: 100
+      left: 10
     };
 
     this._xScale = d3.scaleTime();
     this._xAxis = d3.axisBottom(this._xScale);
-
-    this._yScale = d3.scaleBand();
-    this._yAxis = d3.axisLeft(this._yScale);
   }
 
 
@@ -70,7 +67,8 @@ class ZTimeline {
     this._container = d3.select(container);
 
     this._svg = this._container
-      .append('svg');
+      .append('svg')
+      .attr('class', 'z-timeline');
 
     this._canvas = this._svg
       .append('g')
@@ -79,10 +77,6 @@ class ZTimeline {
     this._xAxisContainer = this._canvas
       .append('g')
       .attr('class', 'axis x-axis');
-
-    this._yAxisContainer = this._canvas
-      .append('g')
-      .attr('class', 'axis y-axis');
 
     this._bandsContainer = this._canvas
       .append('g')
@@ -119,10 +113,6 @@ class ZTimeline {
       .rangeRound([0, this.getInnerWidth()])
       .domain(this.getXDomain());
 
-    this._yScale
-      .rangeRound([0, this.getInnerHeight()])
-      .domain(this.getYDomain());
-
     this._timelines.forEach(timeline => timeline.update())
 
     return this.resize();
@@ -138,8 +128,7 @@ class ZTimeline {
 
     this._svg
       .attr('width', '100%')
-      .attr('height', this.getOuterHeight())
-      .attr('class', 'z-timeline');
+      .attr('height', this.getOuterHeight());
 
     this._canvas
       .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -147,9 +136,6 @@ class ZTimeline {
     this._xAxisContainer
       .attr('transform', 'translate(' + [0, this.getInnerHeight()] + ')')
       .call(this._xAxis);
-
-    this._yAxisContainer
-      .call(this._yAxis);
 
     this._timelines.forEach(timeline => timeline.resize())
 
@@ -171,17 +157,6 @@ class ZTimeline {
     });
 
     return d3.extent(dateSet);
-  }
-
-
-  /**
-   * Get Y axis domain.
-   * @public
-   * @returns {String[]}
-   */
-  getYDomain() {
-
-    return this._data.map(d => d.name);
   }
 
 
