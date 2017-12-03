@@ -14,6 +14,7 @@ class Event {
 
     this._timeline = timeline;
     this._xScale = timeline._xScale;
+    this._tooltip = undefined;
   }
 
 
@@ -51,14 +52,21 @@ class Event {
 
     this._container = d3.select(container);
 
-    this._canvas = this._container
-      .append('g')
-      .attr('class', 'event');
+    this._container
+      .on('mouseenter', function(d) {
+        this._tooltip = ZTooltip.getInstance()
+          .setContent(d.title)
+          .showOn(this);
+      }).on('mouseleave', function() {
+        this._tooltip.remove();
+      }).on('click', function(d) {
 
-    this._outerCircle = this._canvas
+      });
+
+    this._outerCircle = this._container
       .append('circle');
 
-    this._innerCircle = this._canvas
+    this._innerCircle = this._container
       .append('circle');
 
     return this;
