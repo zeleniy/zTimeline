@@ -41,12 +41,12 @@ class ZTimeline {
 
   /**
    * Set events.
-   * @param {Object[]}
+   * @param {Object[]} data
    * @returns {ZTimeline}
    */
-  setEvents(events) {
+  setEvents(data) {
 
-    this._events = events;
+    this._data = data;
     return this;
   }
 
@@ -81,7 +81,7 @@ class ZTimeline {
 
     this._bands = this._bandsContainer
       .selectAll('g.band')
-      .data(this._events)
+      .data(this._data)
       .enter()
       .append('g')
       .attr('class', 'band')
@@ -92,6 +92,14 @@ class ZTimeline {
     this._backbone = this._bands
       .append('rect')
       .attr('class', 'backbone');
+
+    this._events = this._bands
+      .selectAll('.event')
+      .data(function(d) {
+        return d.events;
+      }).enter()
+      .append('circle')
+      .attr('class', 'event');
 
     return this.update();
   }
@@ -144,7 +152,14 @@ class ZTimeline {
       .attr('x', function(d) {
         return this._xScale(this.getMinDate(d));
       }.bind(this))
-      .attr('y', 18)
+      .attr('y', 18);
+
+    this._events
+      .attr('r', 10)
+      .attr('cx', d => this._xScale(new Date(d.date)))
+      .attr('cy', this._bandHeight / 2);
+
+    return this;
   }
 
 
@@ -166,7 +181,7 @@ class ZTimeline {
    */
   getXDomain() {
 
-    const dateSet = this._events.reduce(function(result, eventSet, index) {
+    const dateSet = this._data.reduce(function(result, eventSet, index) {
       return result.concat(eventSet.interval)
     }, []).map(function(d) {
       return new Date(d);
@@ -182,7 +197,7 @@ class ZTimeline {
    */
   getYDomain() {
 
-    return this._events.map(d => d.name);
+    return this._data.map(d => d.name);
   }
 
 
@@ -225,6 +240,6 @@ class ZTimeline {
    */
   getInnerHeight() {
 
-    return this._bandHeight * this._events.length;
+    return this._bandHeight * this._data.length;
   }
 }
