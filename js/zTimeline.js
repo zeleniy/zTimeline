@@ -39,12 +39,18 @@ class ZTimeline {
   }
 
 
+  getBandHeight() {
+
+    return this._bandHeight;
+  }
+
+
   /**
-   * Set events.
+   * Set data.
    * @param {Object[]} data
    * @returns {ZTimeline}
    */
-  setEvents(data) {
+  setData(data) {
 
     this._data = data;
     return this;
@@ -89,17 +95,11 @@ class ZTimeline {
         return 'translate(' + [0, i * this._bandHeight] + ')'
       }.bind(this));
 
-    this._backbone = this._bands
-      .append('rect')
-      .attr('class', 'backbone');
-
-    this._events = this._bands
-      .selectAll('.event')
-      .data(function(d) {
-        return d.events;
-      }).enter()
-      .append('circle')
-      .attr('class', 'event');
+    this._timelines = this._data.map(function(d, i) {
+      return Timeline.getInstance(this)
+        .setData(d)
+        .renderTo(this._bands.nodes()[i]);
+    }.bind(this));
 
     return this.update();
   }
@@ -118,6 +118,8 @@ class ZTimeline {
     this._yScale
       .rangeRound([0, this.getInnerHeight()])
       .domain(this.getYDomain());
+
+    this._timelines.forEach(timeline => timeline.update())
 
     return this.resize();
   }
@@ -144,34 +146,9 @@ class ZTimeline {
     this._yAxisContainer
       .call(this._yAxis);
 
-    this._backbone
-      .attr('width', function(d) {
-        return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
-      }.bind(this))
-      .attr('height', this._bandHeight - 36)
-      .attr('x', function(d) {
-        return this._xScale(this.getMinDate(d));
-      }.bind(this))
-      .attr('y', 18);
-
-    this._events
-      .attr('r', 10)
-      .attr('cx', d => this._xScale(new Date(d.date)))
-      .attr('cy', this._bandHeight / 2);
+    this._timelines.forEach(timeline => timeline.resize())
 
     return this;
-  }
-
-
-  getMaxDate(d) {
-
-    return new Date(d.interval[1]);
-  }
-
-
-  getMinDate(d) {
-
-    return new Date(d.interval[0]);
   }
 
 
