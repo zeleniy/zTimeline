@@ -9,9 +9,15 @@ class ZTimeline {
   /**
    * @public
    * @constructor
+   * @param {Object} [options={}]
+   * @param {Object} [options.axes]
+   * @param {Object} [options.axes.x]
+   * @param {Object} [options.axes.x.grid]
+   * @param {Boolean} [options.axes.x.grid.show=true]
    */
-  constructor() {
+  constructor(options) {
 
+    this._config = new ZConfig(options);
     this._bandHeight = 50;
     this._xAxisHeight = 33;
     this._margin = {
@@ -29,11 +35,12 @@ class ZTimeline {
   /**
    * @public
    * @static
+   * @param {Object} [options={}]
    * @returns {ZTimeline}
    */
-  static getInstance() {
+  static getInstance(options) {
 
-    return new ZTimeline();
+    return new ZTimeline(options);
   }
 
 
@@ -46,12 +53,12 @@ class ZTimeline {
   /**
    * Set data.
    * @public
-   * @param {Object} data
+   * @param {Object} dataSet
    * @returns {ZTimeline}
    */
-  setData(config) {
+  setData(dataSet) {
 
-    this._config = config;
+    this._dataSet = dataSet;
     return this;
   }
 
@@ -72,7 +79,7 @@ class ZTimeline {
 
     this._title = this._div
       .append('div')
-      .attr('class', this._config.title ? 'title' : null);
+      .attr('class', this._dataSet.title ? 'title' : null);
 
     this._svg = this._div
       .append('svg')
@@ -92,7 +99,7 @@ class ZTimeline {
 
     this._bands = this._bandsContainer
       .selectAll('g.band')
-      .data(this._config.data)
+      .data(this._dataSet.data)
       .enter()
       .append('g')
       .attr('class', 'band')
@@ -100,7 +107,7 @@ class ZTimeline {
         return 'translate(' + [0, i * this._bandHeight] + ')'
       }.bind(this));
 
-    this._timelines = this._config.data.map(function(d, i) {
+    this._timelines = this._dataSet.data.map(function(d, i) {
       return Timeline.getInstance(this)
         .setData(d)
         .renderTo(this._bands.nodes()[i]);
@@ -121,7 +128,7 @@ class ZTimeline {
       .rangeRound([0, this.getInnerWidth()])
       .domain(this.getXDomain());
 
-    this._title.text(this._config.title)
+    this._title.text(this._dataSet.title)
 
     this._timelines.forEach(timeline => timeline.update())
 
@@ -143,6 +150,10 @@ class ZTimeline {
     this._canvas
       .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
 
+    this._xAxis
+      .tickSizeInner(this._config.get('axes.x.grid.show', true) ? - this.getOuterHeight() : 6)
+      .tickPadding(6);
+
     this._xAxisContainer
       .attr('transform', 'translate(' + [0, this.getInnerHeight()] + ')')
       .call(this._xAxis);
@@ -160,7 +171,7 @@ class ZTimeline {
    */
   getXDomain() {
 
-    const dateSet = this._config.data.reduce(function(result, eventSet, index) {
+    const dateSet = this._dataSet.data.reduce(function(result, eventSet, index) {
       return result.concat(eventSet.interval)
     }, []).map(function(d) {
       return new Date(d);
@@ -213,6 +224,6 @@ class ZTimeline {
    */
   getInnerHeight() {
 
-    return this._bandHeight * this._config.data.length;
+    return this._bandHeight * this._dataSet.data.length;
   }
 }
