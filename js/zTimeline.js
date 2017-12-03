@@ -89,9 +89,9 @@ class ZTimeline {
         return 'translate(' + [0, i * this._bandHeight] + ')'
       }.bind(this));
 
-    this._bandContainer = this._bands
+    this._backbone = this._bands
       .append('rect')
-      .attr('class', 'band');
+      .attr('class', 'backbone');
 
     return this.update();
   }
@@ -136,7 +136,7 @@ class ZTimeline {
     this._yAxisContainer
       .call(this._yAxis);
 
-    this._bandContainer
+    this._backbone
       .attr('width', function(d) {
         return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
       }.bind(this))
