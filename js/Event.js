@@ -15,6 +15,9 @@ class Event {
     this._timeline = timeline;
     this._xScale = timeline._xScale;
     this._tooltip = undefined;
+
+    this._outerR = 10;
+    this._innerR = 5;
   }
 
 
@@ -42,6 +45,12 @@ class Event {
   }
 
 
+  getData() {
+
+    return this._data;
+  }
+
+
   /**
    * Render Event.
    * @public
@@ -53,13 +62,9 @@ class Event {
     this._container = d3.select(container);
 
     this._container
-      .on('mouseenter', function(d) {
-        this._tooltip = ZTooltip.getInstance()
-          .setContent(d.title)
-          .showOn(this);
-      }).on('mouseleave', function() {
-        this._tooltip.remove();
-      }).on('click', function(d) {
+      .on('mouseenter', this._mouseEnterEventHandler.bind(this))
+      .on('mouseleave', this._mouseLeaveEventHandler.bind(this))
+      .on('click', function(d) {
 
       });
 
@@ -70,6 +75,66 @@ class Event {
       .append('circle');
 
     return this;
+  }
+
+
+  /**
+   * Get container.
+   * @public
+   * @returns {SVGElement}
+   */
+  getContainer() {
+
+    return this._container.node();
+  }
+
+
+  /**
+   * Get dimensions box.
+   * @public
+   * @returns {Object}
+   */
+  getBox() {
+
+    return this.getContainer().getBoundingClientRect();
+  }
+
+
+  /**
+   * Get center coordinates.
+   * @public
+   * @return {Object}
+   */
+  getCenter() {
+
+    const box = this.getBox();
+
+    return {
+      x: box.left + box.width / 2,
+      y: box.top + box.height / 2
+    };
+  }
+
+
+  /**
+   * @private
+   */
+  _mouseEnterEventHandler() {
+
+    this._timeline
+      .getZTimeline()
+      .setLinePointerTo(this);
+  }
+
+
+  /**
+   * @private
+   */
+  _mouseLeaveEventHandler() {
+
+    this._timeline
+      .getZTimeline()
+      .resetLinePointer();
   }
 
 
@@ -91,22 +156,33 @@ class Event {
    */
   resize() {
 
-    const x = this._xScale(new Date(this._data.date));
+    const x = this.getX();
     const y = this.getY();
 
     this._outerCircle
-      .attr('r', 10)
+      .attr('r', this._outerR)
       .attr('cx', x)
       .attr('cy', y)
       .style('fill', 'steelblue');
 
     this._innerCircle
-      .attr('r', 5)
+      .attr('r', this._innerR)
       .attr('cx', x)
       .attr('cy', y)
       .style('fill', 'white');
 
     return this;
+  }
+
+
+  /**
+   * Get X coordinate.
+   * @public
+   * @returns {Number}
+   */
+  getX() {
+
+    return this._xScale(new Date(this._data.date));
   }
 
 

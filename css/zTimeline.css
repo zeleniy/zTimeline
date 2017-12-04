@@ -11,3 +11,7 @@ div.z-timeline div.title {
 div.z-timeline g.x-axis .tick line {
   stroke: lightgrey;
 }
+
+div.z-timeline line.pointer {
+  pointer-events: none;
+}

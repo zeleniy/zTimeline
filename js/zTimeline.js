@@ -44,6 +44,53 @@ class ZTimeline {
   }
 
 
+  /**
+   * @public
+   * @param {Event}
+   */
+  setLinePointerTo(event) {
+
+    this._eventTip = ZTooltip.getInstance()
+      .setContent(event.getData().title)
+      .showOn(event.getContainer());
+
+    this._axisTip = ZTooltip.getInstance({ offset: { y : 0 } })
+      .setContent(event.getData().date)
+      .showOn(event.getCenter().x, this.getOuterHeight());
+
+    if (this._config.get('axes.x.pointer.show', false)) {
+      this._linePointer = this._canvas
+        .append('line')
+        .attr('class', 'pointer')
+        .style('stroke', 'black')
+        .style('stroke-width', 1)
+        .attr('x1', event.getX())
+        .attr('y1', - this._margin.top)
+        .attr('x2', event.getX())
+        .attr('y2', this.getInnerHeight());
+    }
+  }
+
+
+  /**
+   * @public
+   */
+  resetLinePointer() {
+
+    if (this._config.get('axes.x.pointer.show', false)) {
+      this._linePointer.remove();
+    }
+
+    this._eventTip.remove();
+    this._axisTip.remove();
+  }
+
+
+  /**
+   * Get band height.
+   * @public
+   * @returns {Number}
+   */
   getBandHeight() {
 
     return this._bandHeight;
@@ -144,8 +191,8 @@ class ZTimeline {
   resize() {
 
     this._svg
-      .attr('width', '100%')
-      .attr('height', this.getOuterHeight());
+      .attr('width', this.getOuterWidth())
+      .attr('height', this.getInnerHeight() + this._xAxisHeight);
 
     this._canvas
       .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -213,7 +260,10 @@ class ZTimeline {
    */
   getOuterHeight() {
 
-    return this.getInnerHeight() + this._xAxisHeight;
+    return this._container
+      .node()
+      .getBoundingClientRect()
+      .height;
   }
 
 

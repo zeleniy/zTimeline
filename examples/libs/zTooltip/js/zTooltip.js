@@ -64,52 +64,106 @@ class ZTooltip {
 
   /**
    * @public
-   * @param {HTMLElement|SVGElement} element
+   * @param {HTMLElement|SVGElement|Number} element
+   * @param {Number} [y]
    * @returns {ZTooltip}
    */
-  showOn(element) {
+  showOn(element, y) {
 
-    this._tip.html(
-      '<table>' +
-        '<tbody>' +
-          this._content +
-        '</tbody>' +
-      '</table>'
-    ).style('display', 'block');
-
-    const elementBox = element.getBoundingClientRect();
-    const tooltipBox = this._tip.node().getBoundingClientRect();
-
-    var x = elementBox.x + this.getScrollXOffset();
-    var y = elementBox.y + this.getScrollYOffset();
-
-    const xOffset = this._config.get('offset.x', 5);
-    const yOffset = this._config.get('offset.y', 5);
-
-    switch (this._config.get('position', 'top')) {
-      case 'top': {
-        x -= (tooltipBox.width - elementBox.width) / 2;
-        y -= tooltipBox.height + yOffset;
-      }; break;
-      case 'right': {
-        x += elementBox.width + xOffset;
-        y -= (tooltipBox.height - elementBox.height) / 2;
-      }; break;
-      case 'bottom': {
-        x -= (tooltipBox.width - elementBox.width) / 2;
-        y += elementBox.height + yOffset;
-      }; break;
-      case 'left': {
-        x -= tooltipBox.width + xOffset;
-        y -= (tooltipBox.height - elementBox.height) / 2;
-      }; break;
-    };
-
-    this._tip
-      .style('left', x + 'px')
-      .style('top', y + 'px');
+    if (arguments.length == 1) {
+      this._showOnElement(element);
+    } else {
+      this._showByXY(element, y);
+    }
 
     return this;
+  }
+
+
+  _showByXY(x, y) {
+
+    this._tip.html(
+        '<table>' +
+          '<tbody>' +
+            this._content +
+          '</tbody>' +
+        '</table>'
+      ).style('display', 'block');
+
+      const tooltipBox = this._tip.node().getBoundingClientRect();
+
+      x += this.getScrollXOffset();
+      y += this.getScrollYOffset();
+
+      const xOffset = this._config.get('offset.x', 5);
+      const yOffset = this._config.get('offset.y', 5);
+
+      switch (this._config.get('position', 'top')) {
+        case 'top': {
+          x -= tooltipBox.width / 2;
+          y -= tooltipBox.height + yOffset;
+        }; break;
+        case 'right': {
+          x += xOffset;
+          y -= tooltipBox.height / 2;
+        }; break;
+        case 'bottom': {
+          x -= tooltipBox.width / 2;
+          y += yOffset;
+        }; break;
+        case 'left': {
+          x -= tooltipBox.width + xOffset;
+          y -= tooltipBox.height / 2;
+        }; break;
+      };
+
+      this._tip
+        .style('left', x + 'px')
+        .style('top', y + 'px');
+  }
+
+
+  _showOnElement(element) {
+
+    this._tip.html(
+        '<table>' +
+          '<tbody>' +
+            this._content +
+          '</tbody>' +
+        '</table>'
+      ).style('display', 'block');
+
+      const elementBox = element.getBoundingClientRect();
+      const tooltipBox = this._tip.node().getBoundingClientRect();
+
+      var x = elementBox.x + this.getScrollXOffset();
+      var y = elementBox.y + this.getScrollYOffset();
+
+      const xOffset = this._config.get('offset.x', 5);
+      const yOffset = this._config.get('offset.y', 5);
+
+      switch (this._config.get('position', 'top')) {
+        case 'top': {
+          x -= (tooltipBox.width - elementBox.width) / 2;
+          y -= tooltipBox.height + yOffset;
+        }; break;
+        case 'right': {
+          x += elementBox.width + xOffset;
+          y -= (tooltipBox.height - elementBox.height) / 2;
+        }; break;
+        case 'bottom': {
+          x -= (tooltipBox.width - elementBox.width) / 2;
+          y += elementBox.height + yOffset;
+        }; break;
+        case 'left': {
+          x -= tooltipBox.width + xOffset;
+          y -= (tooltipBox.height - elementBox.height) / 2;
+        }; break;
+      };
+
+      this._tip
+        .style('left', x + 'px')
+        .style('top', y + 'px');
   }
 
 

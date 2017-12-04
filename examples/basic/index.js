@@ -3,6 +3,12 @@ const config = {
     x: {
       grid: {
         show: true
+      },
+      tooltip: {
+        show: true
+      },
+      pointer: {
+        show: false
       }
     }
   }

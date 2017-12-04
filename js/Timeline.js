@@ -29,6 +29,16 @@ class Timeline {
 
 
   /**
+   * @public
+   * @returns {ZTimeline}
+   */
+  getZTimeline() {
+
+    return this._zTimeline;
+  }
+
+
+  /**
    * Set data.
    * @public
    * @param {Object} data
