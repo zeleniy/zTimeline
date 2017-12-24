@@ -10,6 +10,9 @@ const config = {
       pointer: {
         show: false
       }
+    },
+    y: {
+      zebra: false
     }
   }
 };

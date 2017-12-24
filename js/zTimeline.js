@@ -177,8 +177,15 @@ class ZTimeline {
    */
   _getBackgroundColor(i) {
 
-//    return '#ffffff';
-    return this._dataSet.data[i]['background-color'] || (i % 2 ? '#f0f0f0' : '#ffffff');
+    var color = this._dataSet.data[i]['background-color'];
+
+    if (color) {
+      return color;
+    } else if (this._config.get('axes.y.zebra')) {
+      return i % 2 ? '#f5f5f5' : '#ffffff';
+    } else {
+      return 'transparent';
+    }
   }
 
 
