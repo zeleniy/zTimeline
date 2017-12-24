@@ -136,15 +136,21 @@ class ZTimeline {
       .append('g')
       .attr('class', 'canvas');
 
+    this._background = this._canvas
+      .selectAll('rect.background')
+      .data(this._dataSet.data)
+      .enter()
+      .append('rect')
+      .attr('class', 'background')
+      .style('fill', function(d, i) {
+        return this._getBackgroundColor(i);
+      }.bind(this));
+
     this._xAxisContainer = this._canvas
       .append('g')
       .attr('class', 'axis x-axis');
 
-    this._bandsContainer = this._canvas
-      .append('g')
-      .attr('class', 'bands-container');
-
-    this._bands = this._bandsContainer
+    this._bands = this._canvas
       .selectAll('g.band')
       .data(this._dataSet.data)
       .enter()
@@ -161,6 +167,18 @@ class ZTimeline {
     }.bind(this));
 
     return this.update();
+  }
+
+
+  /**
+   * Get band's background color.
+   * @param {Integer} i - serial number
+   * @returns {String}
+   */
+  _getBackgroundColor(i) {
+
+//    return '#ffffff';
+    return this._dataSet.data[i]['background-color'] || (i % 2 ? '#f0f0f0' : '#ffffff');
   }
 
 
@@ -204,6 +222,12 @@ class ZTimeline {
     this._xAxisContainer
       .attr('transform', 'translate(' + [0, this.getInnerHeight()] + ')')
       .call(this._xAxis);
+
+    this._background
+      .attr('width', this.getInnerWidth())
+      .attr('height', this.getBandHeight())
+      .attr('x', 0)
+      .attr('y', (d, i) => i * this.getBandHeight());
 
     this._timelines.forEach(timeline => timeline.resize())
 

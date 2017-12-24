@@ -27,6 +27,7 @@
     ]
   }, {
     "name": "Фёдор Шаляпин",
+    "background-color": "#ffe6e6",
     "interval": ["1873-02-13", "1938-04-12"],
     "events": [
     ]
