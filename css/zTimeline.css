@@ -8,6 +8,10 @@ div.z-timeline div.title {
   padding: 10px 0;
 }
 
+div.z-timeline svg {
+  display: block;
+}
+
 div.z-timeline g.x-axis .tick line {
   stroke: lightgrey;
 }

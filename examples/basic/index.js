@@ -12,7 +12,7 @@ const config = {
       }
     },
     y: {
-      zebra: false
+      zebra: true
     }
   }
 };

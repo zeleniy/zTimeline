@@ -19,11 +19,10 @@ class ZTimeline {
 
     this._config = new ZConfig(options);
     this._bandHeight = 50;
-    this._xAxisHeight = 33;
     this._margin = {
       top: 10,
       right: 10,
-      bottom: 0,
+      bottom: 25,
       left: 10
     };
 
@@ -217,7 +216,7 @@ class ZTimeline {
 
     this._svg
       .attr('width', this.getOuterWidth())
-      .attr('height', this.getInnerHeight() + this._xAxisHeight);
+      .attr('height', this.getInnerHeight());
 
     this._canvas
       .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -227,7 +226,7 @@ class ZTimeline {
       .tickPadding(6);
 
     this._xAxisContainer
-      .attr('transform', 'translate(' + [0, this.getInnerHeight()] + ')')
+      .attr('transform', 'translate(' + [0, this.getBandsHeight()] + ')')
       .call(this._xAxis);
 
     this._background
@@ -304,6 +303,17 @@ class ZTimeline {
    * @returns {Number}
    */
   getInnerHeight() {
+
+    return this.getBandsHeight() + this._margin.top + this._margin.bottom;
+  }
+
+
+  /**
+   * Get bands total height.
+   * @public
+   * @returns {Number}
+   */
+  getBandsHeight() {
 
     return this._bandHeight * this._dataSet.data.length;
   }
