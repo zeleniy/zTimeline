@@ -8,7 +8,7 @@ const config = {
         show: true
       },
       pointer: {
-        show: false
+        show: true
       }
     },
     y: {

@@ -53,7 +53,19 @@ class ZTimeline {
       .setContent(event.getData().title)
       .showOn(event.getContainer());
 
-    this._axisTip = ZTooltip.getInstance({ offset: { y : 0 } })
+    this._axisTip = ZTooltip.getInstance({
+      css: {
+        'height': (this._margin.bottom - 1) + 'px',
+        'line-height': (this._margin.bottom - 1) + 'px',
+        'background-color': '#000',
+        'color': '#fff',
+        'padding': '0 5px',
+        'border-radius': 0,
+        'border': 0,
+      },
+      offset: {
+        y : 0
+      }})
       .setContent(event.getData().date)
       .showOn(event.getCenter().x, this.getOuterHeight());
 

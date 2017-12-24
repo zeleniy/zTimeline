@@ -23,6 +23,11 @@ class ZTooltip {
       .attr('class', 'z-tooltip')
       .style('display', 'none')
       .style('z-index', '99');
+
+    var css = this._config.get('css', {});
+    for (var i in css) {
+      this._tip.style(i, css[i])
+    }
   }
 
 
