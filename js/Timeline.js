@@ -46,7 +46,7 @@ class Timeline {
    */
   setData(data) {
 
-    this._data = data;
+    this._config = new ZConfig(data);
     return this;
   }
 
@@ -66,19 +66,21 @@ class Timeline {
       .attr('class', 'title')
       .attr('dy', '-0.7em');
 
-    this._backbone = this._container
-      .append('rect')
-      .attr('class', 'backbone')
-      .style('fill', 'steelblue');
+    if (this._hasBackbone()) {
+      this._backbone = this._container
+        .append('rect')
+        .attr('class', 'backbone')
+        .style('fill', 'steelblue');
+    }
 
     this._eventsContainers = this._container
       .selectAll('.event')
-      .data(this._data.events)
+      .data(this._config.get('events'))
       .enter()
       .append('g')
       .attr('class', 'event');
 
-    this._events = this._data.events.map(function(d, i) {
+    this._events = this._config.get('events').map(function(d, i) {
       return Event.getInstance(this)
         .setData(d)
         .renderTo(this._eventsContainers.nodes()[i])
@@ -97,7 +99,7 @@ class Timeline {
 
     this._title
       .style('fill', '#404040')
-      .text(this._data.name);
+      .text(this._config.get('name'));
 
     this._events.forEach(event => event.update());
 
@@ -112,15 +114,18 @@ class Timeline {
    */
   resize() {
 
-    this._backbone
-      .attr('width', function(d) {
-        return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
-      }.bind(this))
-      .attr('height', this.getHeight() - 38)
-      .attr('x', function(d) {
-        return this._xScale(this.getMinDate(d));
-      }.bind(this))
-      .attr('y', 19);
+    if (this._hasBackbone()) {
+      this._backbone
+        .attr('width', function(d) {
+//          console.log(this._config.get('name'), this._hasBackbone(), this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d)))
+          return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
+        }.bind(this))
+        .attr('height', this.getHeight() - 38)
+        .attr('x', function(d) {
+          return this._xScale(this.getMinDate(d));
+        }.bind(this))
+        .attr('y', 19);
+    }
 
     this._title
       .attr('y', this.getHeight() / 2)
@@ -128,6 +133,17 @@ class Timeline {
     this._events.forEach(event => event.resize());
 
     return this;
+  }
+
+
+  /**
+   * @private
+   * @returns {Boolean}
+   */
+  _hasBackbone() {
+
+    return (this._config.is('interval', true) && this._config.get('events').length > 1) ||
+      (Array.isArray(this._config.get('interval')) && this._config.get('interval').length > 1);
   }
 
 
@@ -149,7 +165,11 @@ class Timeline {
    */
   getMaxDate(d) {
 
-    return new Date(d.interval[1]);
+    if (this._config.is('interval', true)) {
+      return d3.max(this._config.get('events', []), v => new Date(v.date));
+    } else {
+      return new Date(d.interval[1]);
+    }
   }
 
 
@@ -160,6 +180,10 @@ class Timeline {
    */
   getMinDate(d) {
 
-    return new Date(d.interval[0]);
+    if (this._config.is('interval', true)) {
+      return d3.min(this._config.get('events', []), v => new Date(v.date));
+    } else {
+      return new Date(d.interval[0]);
+    }
   }
 }
