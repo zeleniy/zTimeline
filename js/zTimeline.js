@@ -261,14 +261,8 @@ class ZTimeline {
   getXDomain() {
 
     const dateSet = this._dataSet.data.reduce(function(result, eventSet, index) {
-      if (Array.isArray(eventSet.interval)) {
-        return result.concat(eventSet.interval)
-      } else {
-        return result;
-      }
-    }, []).map(function(d) {
-      return new Date(d);
-    });
+      return result.concat(Timeline.getInterval(eventSet));
+    }, []);
 
     return d3.extent(dateSet);
   }

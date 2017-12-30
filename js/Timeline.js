@@ -74,17 +74,32 @@ class Timeline {
     }
 
     this._eventsContainers = this._container
+      .append('g')
+      .attr('class', 'events')
       .selectAll('.event')
-      .data(this._config.get('events'))
+      .data(this._config.get('events', []))
       .enter()
       .append('g')
       .attr('class', 'event');
 
-    this._events = this._config.get('events').map(function(d, i) {
-      return Event.getInstance(this)
-        .setData(d)
-        .renderTo(this._eventsContainers.nodes()[i])
-    }.bind(this))
+    this._events = this._config.get('events', [])
+      .map(function(d, i) {
+        return Event.getInstance(this)
+          .setData(d)
+          .renderTo(this._eventsContainers.nodes()[i])
+      }.bind(this));
+
+    this._spans = this._container
+      .append('g')
+      .attr('class', 'spans')
+      .selectAll('.span')
+      .data(this._config.get('spans', []))
+      .enter()
+      .append('rect')
+      .attr('class', 'span')
+      .style('fill', function(d, i) {
+        return d.color || d3.schemeCategory10[i % d3.schemeCategory10.length];
+      });
 
     return this;
   }
@@ -117,12 +132,11 @@ class Timeline {
     if (this._hasBackbone()) {
       this._backbone
         .attr('width', function(d) {
-//          console.log(this._config.get('name'), this._hasBackbone(), this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d)))
-          return this._xScale(this.getMaxDate(d)) - this._xScale(this.getMinDate(d));
+          return this._xScale(this.getMaxDate()) - this._xScale(this.getMinDate());
         }.bind(this))
         .attr('height', this.getHeight() - 38)
         .attr('x', function(d) {
-          return this._xScale(this.getMinDate(d));
+          return this._xScale(this.getMinDate());
         }.bind(this))
         .attr('y', 19);
     }
@@ -131,6 +145,16 @@ class Timeline {
       .attr('y', this.getHeight() / 2)
 
     this._events.forEach(event => event.resize());
+
+    this._spans
+      .attr('width', function(d) {
+        return this._xScale(new Date(d.to)) - this._xScale(new Date(d.from));
+      }.bind(this))
+      .attr('height', this.getHeight() - 38)
+      .attr('x', function(d) {
+        return this._xScale(new Date(d.from));
+      }.bind(this))
+      .attr('y', 19);
 
     return this;
   }
@@ -142,7 +166,8 @@ class Timeline {
    */
   _hasBackbone() {
 
-    return (this._config.is('interval', true) && this._config.get('events').length > 1) ||
+    return (this._config.is('interval', true) && this._config.get('events', []).length > 1) ||
+      (this._config.is('interval', true) && this._config.get('spans', []).length > 0) ||
       (Array.isArray(this._config.get('interval')) && this._config.get('interval').length > 1);
   }
 
@@ -159,17 +184,39 @@ class Timeline {
 
 
   /**
+   * @public
+   * @static
+   * @param {Object} data
+   * @returns {Date[]}
+   */
+  static getInterval(data) {
+
+    var interval = [];
+
+    if (Array.isArray(data.interval)) {
+      interval = interval.concat(data.interval);
+    }
+
+    if (Array.isArray(data.events)) {
+      interval = interval.concat(data.events.map(e => e.date));
+    }
+
+    if (Array.isArray(data.spans)) {
+      interval = interval.concat(data.spans.reduce((r, s) => r.concat([s.from, s.to]), []));
+    }
+
+    return d3.extent(interval, d => new Date(d));
+  }
+
+
+  /**
    * Get interval min date.
    * @public
    * @returns {Date}
    */
-  getMaxDate(d) {
+  getMaxDate() {
 
-    if (this._config.is('interval', true)) {
-      return d3.max(this._config.get('events', []), v => new Date(v.date));
-    } else {
-      return new Date(d.interval[1]);
-    }
+    return Timeline.getInterval(this._config.getOptions())[1];
   }
 
 
@@ -178,12 +225,8 @@ class Timeline {
    * @public
    * @returns {Date}
    */
-  getMinDate(d) {
+  getMinDate() {
 
-    if (this._config.is('interval', true)) {
-      return d3.min(this._config.get('events', []), v => new Date(v.date));
-    } else {
-      return new Date(d.interval[0]);
-    }
+    return Timeline.getInterval(this._config.getOptions())[0];
   }
 }
