@@ -87,13 +87,8 @@ class ZTooltip {
 
   _showByXY(x, y) {
 
-    this._tip.html(
-        '<table>' +
-          '<tbody>' +
-            this._content +
-          '</tbody>' +
-        '</table>'
-      ).style('display', 'block');
+    this._tip.html(this._content)
+      .style('display', 'block');
 
       const tooltipBox = this._tip.node().getBoundingClientRect();
 
@@ -122,21 +117,14 @@ class ZTooltip {
         }; break;
       };
 
-      this._tip
-        .style('left', x + 'px')
-        .style('top', y + 'px');
+      this._showTip(x, y);
   }
 
 
   _showOnElement(element) {
 
-    this._tip.html(
-        '<table>' +
-          '<tbody>' +
-            this._content +
-          '</tbody>' +
-        '</table>'
-      ).style('display', 'block');
+    this._tip.html(this._content)
+      .style('display', 'block');
 
       const elementBox = element.getBoundingClientRect();
       const tooltipBox = this._tip.node().getBoundingClientRect();
@@ -166,9 +154,24 @@ class ZTooltip {
         }; break;
       };
 
-      this._tip
-        .style('left', x + 'px')
-        .style('top', y + 'px');
+      this._showTip(x, y);
+  }
+
+
+  /**
+   * @private
+   * @param {Number} x
+   * @param {Number} y
+   */
+  _showTip(x, y) {
+
+    if (x < 0) {
+      x = 0;
+    }
+
+    this._tip
+      .style('left', x + 'px')
+      .style('top', y + 'px');
   }
 
 

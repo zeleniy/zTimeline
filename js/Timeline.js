@@ -89,6 +89,7 @@ class Timeline {
           .renderTo(this._eventsContainers.nodes()[i])
       }.bind(this));
 
+    const self = this;
     this._spans = this._container
       .append('g')
       .attr('class', 'spans')
@@ -99,9 +100,46 @@ class Timeline {
       .attr('class', 'span')
       .style('fill', function(d, i) {
         return d.color || d3.schemeCategory10[i % d3.schemeCategory10.length];
+      }).on('mouseenter', function(d) {
+        self._spanMouseEnterEventHandler(this, d);
+      }).on('mouseout', function(d) {
+        self._spanMouseOutEventHandler(this, d);
       });
 
     return this;
+  }
+
+
+  /**
+   * @private
+   * @param {Element} element
+   * @param {Object} data
+   */
+  _spanMouseEnterEventHandler(element, d) {
+
+    const container = d3.select(document.createElement("div"));
+
+    container.append('div')
+      .style('font-weight', 'bolder')
+      .text(d.name);
+
+    container.append('div')
+      .text(d.range[0] + ' – ' + d.range[1]);
+
+    this._spanTip = ZTooltip.getInstance()
+      .setContent(container.html())
+      .showOn(element);
+  }
+
+
+  /**
+   * @private
+   * @param {Element} element
+   * @param {Object} data
+   */
+  _spanMouseOutEventHandler(element, d) {
+
+    this._spanTip.remove();
   }
 
 
@@ -148,11 +186,11 @@ class Timeline {
 
     this._spans
       .attr('width', function(d) {
-        return this._xScale(new Date(d.to)) - this._xScale(new Date(d.from));
+        return this._xScale(new Date(d.range[1])) - this._xScale(new Date(d.range[0]));
       }.bind(this))
       .attr('height', this.getHeight() - 38)
       .attr('x', function(d) {
-        return this._xScale(new Date(d.from));
+        return this._xScale(new Date(d.range[0]));
       }.bind(this))
       .attr('y', 19);
 
@@ -202,7 +240,7 @@ class Timeline {
     }
 
     if (Array.isArray(data.spans)) {
-      interval = interval.concat(data.spans.reduce((r, s) => r.concat([s.from, s.to]), []));
+      interval = interval.concat(data.spans.reduce((r, s) => r.concat([s.range[0], s.range[1]]), []));
     }
 
     return d3.extent(interval, d => new Date(d));
