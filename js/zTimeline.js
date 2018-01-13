@@ -45,6 +45,16 @@ class ZTimeline {
 
   /**
    * @public
+   * @returns {ZConfig}
+   */
+  getConfig() {
+
+    return this._config;
+  }
+
+
+  /**
+   * @public
    * @param {Event}
    */
   setLinePointerTo(event) {

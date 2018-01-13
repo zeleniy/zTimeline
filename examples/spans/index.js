@@ -14,6 +14,11 @@ const config = {
     y: {
       zebra: true
     }
+  },
+  spans: {
+    tooltip: {
+      show: true
+    }
   }
 };
 

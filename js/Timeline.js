@@ -101,9 +101,13 @@ class Timeline {
       .style('fill', function(d, i) {
         return d.color || d3.schemeCategory10[i % d3.schemeCategory10.length];
       }).on('mouseenter', function(d) {
-        self._spanMouseEnterEventHandler(this, d);
+        if (self._zTimeline.getConfig().get('spans.tooltip.show', true)) {
+          self._spanMouseEnterEventHandler(this, d);
+        }
       }).on('mouseout', function(d) {
-        self._spanMouseOutEventHandler(this, d);
+        if (self._zTimeline.getConfig().get('spans.tooltip.show', true)) {
+          self._spanMouseOutEventHandler(this, d);
+        }
       });
 
     return this;
@@ -117,17 +121,25 @@ class Timeline {
    */
   _spanMouseEnterEventHandler(element, d) {
 
-    const container = d3.select(document.createElement("div"));
+    var tooltipContent = '';
 
-    container.append('div')
-      .style('font-weight', 'bolder')
-      .text(d.name);
+    if (typeof this._zTimeline.getConfig().get('spans.tooltip.show') == 'function') {
+      tooltipContent = this._zTimeline.getConfig().get('spans.tooltip.show').call(undefined, d);
+    } else {
+      const container = d3.select(document.createElement("div"));
 
-    container.append('div')
-      .text(d.range[0] + ' – ' + d.range[1]);
+      container.append('div')
+        .style('font-weight', 'bolder')
+        .text(d.name);
+
+      container.append('div')
+        .text(d.range[0] + ' – ' + d.range[1]);
+
+      tooltipContent = container.html();
+    }
 
     this._spanTip = ZTooltip.getInstance()
-      .setContent(container.html())
+      .setContent(tooltipContent)
       .showOn(element);
   }
 
