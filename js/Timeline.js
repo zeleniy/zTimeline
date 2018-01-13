@@ -70,7 +70,7 @@ class Timeline {
       this._backbone = this._container
         .append('rect')
         .attr('class', 'backbone')
-        .style('fill', 'steelblue');
+        .style('fill', this._zTimeline.getConfig().get('interval.color', 'steelblue'));
     }
 
     this._eventsContainers = this._container
@@ -173,6 +173,22 @@ class Timeline {
 
 
   /**
+   * @public
+   * @returns {Number}
+   */
+  getBackboneHeight() {
+
+    const option = this._zTimeline.getConfig().get('interval.height');
+
+    if (option) {
+      return ZTimeline.getHeightOf(option, this.getHeight());
+    } else {
+      return this.getHeight() - 38;
+    }
+  }
+
+
+  /**
    * Resize timeline.
    * @public
    * @returns {Timeline}
@@ -184,11 +200,11 @@ class Timeline {
         .attr('width', function(d) {
           return this._xScale(this.getMaxDate()) - this._xScale(this.getMinDate());
         }.bind(this))
-        .attr('height', this.getHeight() - 38)
+        .attr('height', this.getBackboneHeight())
         .attr('x', function(d) {
           return this._xScale(this.getMinDate());
         }.bind(this))
-        .attr('y', 19);
+        .attr('y', (this.getHeight() - this.getBackboneHeight()) / 2);
     }
 
     this._title
@@ -218,7 +234,8 @@ class Timeline {
 
     return (this._config.is('interval', true) && this._config.get('events', []).length > 1) ||
       (this._config.is('interval', true) && this._config.get('spans', []).length > 0) ||
-      (Array.isArray(this._config.get('interval')) && this._config.get('interval').length > 1);
+      (Array.isArray(this._config.get('interval')) && this._config.get('interval').length > 1) ||
+      this._zTimeline.getConfig().get('interval.show');
   }
 
 

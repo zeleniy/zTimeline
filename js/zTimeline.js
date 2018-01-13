@@ -45,6 +45,27 @@ class ZTimeline {
 
   /**
    * @public
+   * @static
+   * @param {String|Number} value
+   * @param {Number} height
+   * @returns {Number}
+   */
+  static getHeightOf(value, height) {
+
+    const match = value.match(/[^\d+]+/);
+    if (match === null) {
+      return value;
+    } else if (match[0] == '%') {
+      return height * parseFloat(value) / 100;
+    } else {
+      console.warn('Unexpected interval.height value');
+      return height - 38;
+    }
+  }
+
+
+  /**
+   * @public
    * @returns {ZConfig}
    */
   getConfig() {

@@ -15,6 +15,11 @@ const config = {
       zebra: true
     }
   },
+  interval: {
+    show: true,
+    color: 'rgba(0, 0, 255, 0.15)',
+    height: '50%'
+  },
   spans: {
     tooltip: {
       show: true
